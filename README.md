@@ -1,109 +1,146 @@
 # MyPackage
 
-<a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
-
-✨ Your new, shiny [Nx workspace](https://nx.dev) is ready ✨.
-
-[Learn more about this workspace setup and its capabilities](https://nx.dev/nx-api/js?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects) or run `npx nx graph` to visually explore what was created. Now, let's get you up to speed!
-
-## Generate a library
-
-```sh
-npx nx g @nx/js:lib packages/pkg1 --publishable --importPath=@my-org/pkg1
-```
-
 ## Run tasks
 
 To build the library use:
 
 ```sh
-npx nx build pkg1
+npx nx build my-lib
 ```
 
-To run any task with Nx use:
+See outputs under [`packages/my-lib/dist`](packages/my-lib/dist).
 
-```sh
-npx nx <target> <project-name>
+See the library functions under [`packages/my-lib/src/lib`](packages/my-lib/src/lib). If you write a new function, make sure to export it from the barrel file [`packages/my-lib/src/index.ts`](packages/my-lib/src/index.ts).
+
+## Sharing Privately with Another Team
+
+This library is designed to be shared privately without publishing to a public package registry. Follow these steps to integrate it into your project.
+
+### See sample usage
+
+See this repository for a sample usage of this library: [sample-usage-of](https://github.com/mandarini/sample-usage-of).
+
+### Sharing the Library
+
+Before installation, you need to share the entire `dist` (`packages/my-lib/dist`) folder with the other team.
+
+Ensure that the receiving team has access to the complete `dist` folder, including all its contents:
+
+Example:
+
+```tree
+dist/
+├── README.md
+├── index.cjs.d.ts
+├── index.cjs.js
+├── index.esm.d.ts
+├── index.esm.js
+├── package.json
+└── src
+    ├── index.d.ts
+    ├── index.d.ts.map
+    └── lib
+        ├── my-lib.d.ts
+        ├── my-lib.d.ts.map
+        ├── other-function.d.ts
+        └── other-function.d.ts.map
 ```
 
-These targets are either [inferred automatically](https://nx.dev/concepts/inferred-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or defined in the `project.json` or `package.json` files.
+### Installation
 
-[More about running tasks in the docs &raquo;](https://nx.dev/features/run-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+Once the `dist` folder is shared, the other team can install the library. Choose the method that corresponds to your preferred package manager:
 
-## Versioning and releasing
+#### npm
 
-To version and release the library use
+1. Add the library to your `package.json`:
 
-```
-npx nx release
-```
+   ```json
+   "dependencies": {
+     "my-lib": "file:/absolute/path/to/shared/dist"
+   }
+   ```
 
-Pass `--dry-run` to see what would happen without actually releasing the library.
+   Or use a relative path:
 
-[Learn more about Nx release &raquo;](hhttps://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+   ```json
+   "dependencies": {
+     "my-lib": "file:../relative/path/to/shared/dist"
+   }
+   ```
 
-## Keep TypeScript project references up to date
+2. Run the install command:
 
-Nx automatically updates TypeScript [project references](https://www.typescriptlang.org/docs/handbook/project-references.html) in `tsconfig.json` files to ensure they remain accurate based on your project dependencies (`import` or `require` statements). This sync is automatically done when running tasks such as `build` or `typecheck`, which require updated references to function correctly.
+   ```bash
+   npm install
+   ```
 
-To manually trigger the process to sync the project graph dependencies information to the TypeScript project references, run the following command:
+Alternatively, you can install directly from the command line:
 
-```sh
-npx nx sync
-```
-
-You can enforce that the TypeScript project references are always in the correct state when running in CI by adding a step to your CI job configuration that runs the following command:
-
-```sh
-npx nx sync:check
-```
-
-[Learn more about nx sync](https://nx.dev/reference/nx-commands#sync)
-
-## Set up CI!
-
-### Step 1
-
-To connect to Nx Cloud, run the following command:
-
-```sh
-npx nx connect
+```bash
+npm install /path/to/shared/dist
 ```
 
-Connecting to Nx Cloud ensures a [fast and scalable CI](https://nx.dev/ci/intro/why-nx-cloud?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) pipeline. It includes features such as:
+#### Yarn
 
-- [Remote caching](https://nx.dev/ci/features/remote-cache?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Task distribution across multiple machines](https://nx.dev/ci/features/distribute-task-execution?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Automated e2e test splitting](https://nx.dev/ci/features/split-e2e-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Task flakiness detection and rerunning](https://nx.dev/ci/features/flaky-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+1. Add the library to your `package.json` as shown in the npm section, or
 
-### Step 2
+2. Run the install command:
 
-Use the following command to configure a CI workflow for your workspace:
+   ```bash
+   yarn add file:/path/to/shared/dist
+   ```
 
-```sh
-npx nx g ci-workflow
+#### pnpm
+
+1. Add the library to your `package.json` as shown in the npm section, or
+
+2. Run the install command:
+
+   ```bash
+   pnpm add file:/path/to/shared/dist
+   ```
+
+### Usage
+
+After installation, you can import and use the library in your project:
+
+For TypeScript or ES6+ projects:
+
+```typescript
+import { someFunction } from 'my-lib';
+
+someFunction();
 ```
 
-[Learn more about Nx on CI](https://nx.dev/ci/intro/ci-with-nx#ready-get-started-with-your-provider?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+For CommonJS environments:
 
-## Install Nx Console
+```javascript
+const { someFunction } = require('my-lib');
 
-Nx Console is an editor extension that enriches your developer experience. It lets you run tasks, generate code, and improves code autocompletion in your IDE. It is available for VSCode and IntelliJ.
+someFunction();
+```
 
-[Install Nx Console &raquo;](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+### If you're using Typescript!!!!
 
-## Useful links
+Make sure to add the following to your `tsconfig.json` or `tsconfig.lib.json` file:
 
-Learn more:
+```json
+  "compilerOptions": {
+    ...
+    "allowJs": true,
+    "esModuleInterop": true
+    ...
+  }
+```
 
-- [Learn more about this workspace setup](https://nx.dev/nx-api/js?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects)
-- [Learn about Nx on CI](https://nx.dev/ci/intro/ci-with-nx?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Releasing Packages with Nx release](https://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [What are Nx plugins?](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+### TypeScript Support
 
-And join the Nx community:
-- [Discord](https://go.nx.dev/community)
-- [Follow us on X](https://twitter.com/nxdevtools) or [LinkedIn](https://www.linkedin.com/company/nrwl)
-- [Our Youtube channel](https://www.youtube.com/@nxdevtools)
-- [Our blog](https://nx.dev/blog?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+This library includes TypeScript declarations. TypeScript users will automatically get type definitions and autocompletion for the library's functions and classes.
+
+### Updating
+
+When a new version is available:
+
+1. Share the updated `dist` folder with the other team
+2. They should replace their existing copy with the new version
+3. Run the installation command again to update the package
